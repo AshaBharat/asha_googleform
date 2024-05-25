@@ -1,6 +1,7 @@
 package demo;
 import java.time.Duration;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -18,14 +19,16 @@ public class TestCases {
     String url = "https://docs.google.com/forms/d/e/1FAIpQLSep9LTMntH5YqIXa5nkiPKSs283kdwitBBhXWyZdAS-e4CxBQ/viewform";
     WebDriverWait wait;
     JavascriptExecutor js;
+    Actions act;
     public TestCases()
     {
         System.out.println("Constructor: TestCases");
         //WebDriverManager.chromedriver().timeout(30).setup();
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         js = (JavascriptExecutor) driver;
+        act = new Actions(driver);
     }
 
     public void endTest()
@@ -110,10 +113,11 @@ public class TestCases {
         String time = presenttime.format(formatter);
         WebElement hour = driver.findElement(By.xpath("//input[@aria-label='Hour']"));
         WebElement min = driver.findElement(By.xpath("//input[@aria-label='Minute']"));
-        WebElement ampmdrpdown = driver.findElement(By.xpath("//div[@data-value='AM']/.."));
         sendKeys(hour, time.split(":")[0]);
         sendKeys(min, time.split(":")[1]);
-        click(ampmdrpdown);
+        WebElement ampmdrpdown = driver.findElement(By.xpath("(//div[@role='listbox'])[2]//div/div"));
+        wait.until(ExpectedConditions.visibilityOf(ampmdrpdown));
+        js.executeScript("arguments[0].click();",ampmdrpdown);
         String ampmdata = time.split(" ")[1];
         WebElement ampm = driver.findElement(By.xpath("//div[@data-value='" + ampmdata + "']"));
         click(ampm);
@@ -131,9 +135,8 @@ public class TestCases {
     private void enterhowtoaddress(String text) throws InterruptedException {
         WebElement drpele = driver.findElement(By.xpath("//div[@role='presentation']//span[text()='Choose']"));
         click(drpele);
-        WebElement textele = driver.findElement(By.xpath("//div[@role='presentation']//span[text()='" + text + "']"));
+        WebElement textele = driver.findElement(By.xpath("//div[@role='presentation']//span[contains(text(),'"+text+"')]"));
         js.executeScript("arguments[0].scrollIntoView(true);", textele);
-        Thread.sleep(5000);
-        click(textele);
+        act.moveToElement(textele).click().build().perform();
     }
 }
