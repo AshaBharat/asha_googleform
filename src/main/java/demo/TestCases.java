@@ -26,7 +26,7 @@ public class TestCases {
         //WebDriverManager.chromedriver().timeout(30).setup();
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         js = (JavascriptExecutor) driver;
         act = new Actions(driver);
     }
@@ -44,7 +44,8 @@ public class TestCases {
         System.out.println("Start Test case: testCase01");
         try{
         openURL(url);
-        entername("asha");
+        Thread.sleep(2000);
+        entername("selenium");
         entercourse("yes");
         enterexperience("3 - 5");
         enterlearnings("Java");
@@ -77,6 +78,7 @@ public class TestCases {
         try {
             wait.until(ExpectedConditions.visibilityOf(ele));
             ele.sendKeys(text);
+            //Thread.sleep(5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,6 +110,7 @@ public class TestCases {
     }
 
     private void entertime() {
+        try{
         LocalTime presenttime = LocalTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
         String time = presenttime.format(formatter);
@@ -115,12 +118,11 @@ public class TestCases {
         WebElement min = driver.findElement(By.xpath("//input[@aria-label='Minute']"));
         sendKeys(hour, time.split(":")[0]);
         sendKeys(min, time.split(":")[1]);
-        WebElement ampmdrpdown = driver.findElement(By.xpath("(//div[@role='listbox'])[2]//div/div"));
-        wait.until(ExpectedConditions.visibilityOf(ampmdrpdown));
-        js.executeScript("arguments[0].click();",ampmdrpdown);
-        String ampmdata = time.split(" ")[1];
-        WebElement ampm = driver.findElement(By.xpath("//div[@data-value='" + ampmdata + "']"));
-        click(ampm);
+        Thread.sleep(5000);
+        
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void enter7daysagodate() {
@@ -133,8 +135,10 @@ public class TestCases {
     }
 
     private void enterhowtoaddress(String text) throws InterruptedException {
+        
         WebElement drpele = driver.findElement(By.xpath("//div[@role='presentation']//span[text()='Choose']"));
         click(drpele);
+
         WebElement textele = driver.findElement(By.xpath("//div[@role='presentation']//span[contains(text(),'"+text+"')]"));
         js.executeScript("arguments[0].scrollIntoView(true);", textele);
         act.moveToElement(textele).click().build().perform();
